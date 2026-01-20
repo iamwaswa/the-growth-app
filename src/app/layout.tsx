@@ -1,9 +1,7 @@
+import { InitColorSchemeScript } from "@mui/material";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
-import { ThemeProvider } from "@mui/material/styles";
-import { theme } from "@/theme";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Roboto } from "next/font/google";
-import { CssBaseline } from "@mui/material";
 
 const roboto = Roboto({
   weight: ["300", "400", "500", "700"],
@@ -13,22 +11,35 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "The Kick App",
+  title: "The Growth App",
+  description: "Simple, reliable baby growth measurement app.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "The Growth App",
+  },
 };
 
-export default function RootLayout({
+export const viewport: Viewport = {
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#664ce9",
+  userScalable: false,
+  width: "device-width",
+};
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={roboto.variable}>
+    <html className={roboto.variable} lang="en" suppressHydrationWarning={true}>
       <body>
+        <InitColorSchemeScript />
         <AppRouterCacheProvider>
-          <ThemeProvider theme={theme}>
-            <CssBaseline />
-            <main>{children}</main>
-          </ThemeProvider>
+          <main>{children}</main>
         </AppRouterCacheProvider>
       </body>
     </html>
