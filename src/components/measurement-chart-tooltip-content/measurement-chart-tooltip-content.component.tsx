@@ -14,15 +14,34 @@ export function MeasurementChartTooltipContent() {
 
   const [{ axisValue, dataIndex }] = axesTooltip;
 
-  const percentileData = lineSeries.map(({ color, data, id, label }) => ({
-    color,
-    id,
-    label: typeof label === "string" ? label : "",
-    value:
-      data[dataIndex] === null || data[dataIndex] === undefined
-        ? ""
-        : data[dataIndex].toString(),
-  }));
+  const data = lineSeries
+    .toSorted((a, b) => {
+      const itemA = a.data[dataIndex];
+      const itemB = b.data[dataIndex];
+
+      if (
+        (itemA === null || itemA === undefined) &&
+        (itemB === null || itemB === undefined)
+      ) {
+        return 0;
+      }
+
+      if (itemA === null || itemA === undefined) {
+        return -1;
+      }
+
+      if (itemB === null || itemB === undefined) {
+        return 1;
+      }
+
+      return itemB - itemA;
+    })
+    .map(({ color, data, id, label }) => ({
+      color,
+      id,
+      label: typeof label === "string" ? label : "",
+      value: data[dataIndex] === null ? "" : data[dataIndex].toString(),
+    }));
 
   return (
     <Paper elevation={4}>
@@ -37,11 +56,11 @@ export function MeasurementChartTooltipContent() {
         </Typography>
         <Divider />
         <Stack gap={2} pb={2} px={2}>
-          {percentileData.map((percentile) => (
-            <Stack key={percentile.id} component="span" direction="row" gap={2}>
+          {data.map((item) => (
+            <Stack key={item.id} component="span" direction="row" gap={2}>
               <Stack component="span" direction="row" gap={2} width={80}>
                 <Box
-                  bgcolor={percentile.color}
+                  bgcolor={item.color}
                   component="span"
                   height={20}
                   width={20}
@@ -51,15 +70,13 @@ export function MeasurementChartTooltipContent() {
                   component="span"
                   variant="body2"
                 >
-                  {percentile.label}
+                  {item.label}
                 </Typography>
               </Stack>
               <Typography component="span" variant="body2">
-                {percentile.value} {defaultUnit} •{" "}
-                {convertToAlternateUnitValue(Number(percentile.value)).toFixed(
-                  1,
-                )}{" "}
-                {alternateUnit}
+                {item.value === ""
+                  ? "-"
+                  : `${item.value} ${defaultUnit} • ${convertToAlternateUnitValue(Number(item.value)).toFixed(1)} ${alternateUnit}`}
               </Typography>
             </Stack>
           ))}

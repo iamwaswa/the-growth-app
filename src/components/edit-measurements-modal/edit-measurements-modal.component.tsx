@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { NumberField } from "@/components";
 import {
   type BabyInformation,
   type Month,
@@ -61,6 +62,13 @@ export function EditMeasurementsModal<TUnit extends LengthUnit | WeightUnit>({
   }
 
   function getMeasurementUnit(): LengthUnit | WeightUnit {
+    if (
+      measurement?.type === "head_circumference" &&
+      measurement.headCircumference
+    ) {
+      return measurement.headCircumference.unit;
+    }
+
     if (measurement?.type === "height" && measurement.height) {
       return measurement.height.unit;
     }
@@ -72,16 +80,23 @@ export function EditMeasurementsModal<TUnit extends LengthUnit | WeightUnit>({
     return defaultUnit;
   }
 
-  function getMeasurementValue(): string {
+  function getMeasurementValue(): number | null {
+    if (
+      measurement?.type === "head_circumference" &&
+      measurement.headCircumference
+    ) {
+      return measurement.headCircumference.value;
+    }
+
     if (measurement?.type === "height" && measurement.height) {
-      return measurement.height.value.toString();
+      return measurement.height.value;
     }
 
     if (measurement?.type === "weight" && measurement.weight) {
-      return measurement.weight.value.toString();
+      return measurement.weight.value;
     }
 
-    return "";
+    return null;
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -191,16 +206,17 @@ export function EditMeasurementsModal<TUnit extends LengthUnit | WeightUnit>({
                 </Select>
               </FormControl>
               <Stack direction="row" gap={1}>
-                <TextField
+                <NumberField
                   disabled={measurement === null}
                   fullWidth={true}
-                  value={getMeasurementValue()}
                   label="Value"
-                  onChange={(event) => {
+                  value={getMeasurementValue()}
+                  onValueChange={(value) => {
                     setMeasurement((currentMeasurement) => {
-                      const value = Number(event.target.value);
-
-                      if (currentMeasurement?.type === "head_circumference") {
+                      if (
+                        value !== null &&
+                        currentMeasurement?.type === "head_circumference"
+                      ) {
                         return {
                           ...currentMeasurement,
                           headCircumference: {
@@ -212,7 +228,10 @@ export function EditMeasurementsModal<TUnit extends LengthUnit | WeightUnit>({
                         };
                       }
 
-                      if (currentMeasurement?.type === "height") {
+                      if (
+                        value !== null &&
+                        currentMeasurement?.type === "height"
+                      ) {
                         return {
                           ...currentMeasurement,
                           height: {
@@ -222,7 +241,10 @@ export function EditMeasurementsModal<TUnit extends LengthUnit | WeightUnit>({
                         };
                       }
 
-                      if (currentMeasurement?.type === "weight") {
+                      if (
+                        value !== null &&
+                        currentMeasurement?.type === "weight"
+                      ) {
                         return {
                           ...currentMeasurement,
                           weight: {

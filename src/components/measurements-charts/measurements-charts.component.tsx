@@ -141,7 +141,7 @@ export function MeasurementCharts({
           yAxis={[
             {
               id: "cm",
-              label: "Length (cm)",
+              label: "Head circumference (cm)",
               min: growthPercentileData[activeBabyInformation.gender]
                 .head_circumference_cm.min,
               max: growthPercentileData[activeBabyInformation.gender]
@@ -150,7 +150,7 @@ export function MeasurementCharts({
             },
             {
               id: "in",
-              label: "Length (in)",
+              label: "Head circumference (in)",
               min: cmToInch(
                 growthPercentileData[activeBabyInformation.gender]
                   .head_circumference_cm.min,

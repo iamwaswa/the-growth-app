@@ -79,6 +79,21 @@ export function MeasurementChart<TUnit extends LengthUnit | WeightUnit>({
                 );
 
                 if (
+                  measurement?.type === "head_circumference" &&
+                  measurement.month === month &&
+                  measurement.headCircumference?.value !== undefined
+                ) {
+                  return measurement.headCircumference.unit === alternateUnit
+                    ? Number(
+                        convertToAlternateUnitValue(
+                          measurement.headCircumference.value,
+                          true,
+                        ).toFixed(1),
+                      )
+                    : measurement.headCircumference.value;
+                }
+
+                if (
                   measurement?.type === "height" &&
                   measurement.month === month &&
                   measurement.height?.value !== undefined
@@ -110,6 +125,7 @@ export function MeasurementChart<TUnit extends LengthUnit | WeightUnit>({
 
                 return null;
               }),
+              id: "baby",
               label: "Baby",
               showMark: true,
             },
